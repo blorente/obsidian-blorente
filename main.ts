@@ -1,4 +1,4 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, TFile, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -24,12 +24,34 @@ export default class MyPlugin extends Plugin {
         let yesterday = new Date(today.setDate(today.getDate() - 1));
         let yesterdayStr = yesterday.toISOString().split("T")[0];
         let fileName = this.settings.diaryLocation + "/" + yesterdayStr + ".md";
-        this.app.workspace.openLinkText(fileName, "", true);
+        this.openFile(fileName);
       }
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new SampleSettingTab(this.app, this));
+  }
+
+  // Copied over from:
+  //    Ref: https://github.com/SimplGy/obsidian-open-file-by-magic-date/blob/b01ddd1622bca34ed1e38b9a581d93136b5f81ae/src/main.ts#L103-L136k
+  openFile(fileName: string) {
+    let found = false;
+    this.app.workspace.iterateAllLeaves(leaf => {
+      const file: TFile = (leaf.view as any).file;
+      if (file?.path === fileName) {
+        this.app.workspace.revealLeaf(leaf);
+        if (leaf.view instanceof MarkdownView) {
+          leaf.view.editor.focus();
+        }
+        found = true;
+
+        return;
+      }
+    });
+
+    if (!found) {
+      this.app.workspace.openLinkText(fileName, "", true);
+    }
   }
 
   onunload() {
