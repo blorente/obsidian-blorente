@@ -1,4 +1,4 @@
-import { App, TFile, MarkdownView, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, TFile, MarkdownView, Hotkey, Plugin, PluginSettingTab, Setting, Editor } from 'obsidian';
 
 // Remember to rename these classes and interfaces!
 
@@ -7,7 +7,7 @@ interface MyPluginSettings {
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-  diaryLocation: 'Diary'
+  diaryLocation: 'Diary',
 }
 
 export default class MyPlugin extends Plugin {
@@ -17,15 +17,25 @@ export default class MyPlugin extends Plugin {
     await this.loadSettings();
 
     this.addCommand({
-      id: 'yesterday-open-yesterday-note',
-      name: 'Open Note',
+      id: 'blorente-open-yesterday-note',
+      name: 'Open Yesterday\'s Note',
       callback: () => {
-        let today = new Date();
-        let yesterday = new Date(today.setDate(today.getDate() - 1));
-        let yesterdayStr = yesterday.toISOString().split("T")[0];
-        let fileName = this.settings.diaryLocation + "/" + yesterdayStr + ".md";
+        const today = new Date();
+        const yesterday = new Date(today.setDate(today.getDate() - 1));
+        const yesterdayStr = yesterday.toISOString().split("T")[0];
+        const fileName = this.settings.diaryLocation + "/" + yesterdayStr + ".md";
         this.openFile(fileName);
       }
+    });
+
+    this.addCommand({
+      id: 'blorente-create-task',
+      name: 'Create Task',
+      editorCallback: (editor: Editor, _: MarkdownView) => {
+        const taskStr = "- [ ] "
+        editor.replaceRange(taskStr, editor.getCursor());
+        editor.setCursor(editor.getCursor(), editor.getCursor().ch + taskStr.length)
+      },
     });
 
     // This adds a settings tab so the user can configure various aspects of the plugin

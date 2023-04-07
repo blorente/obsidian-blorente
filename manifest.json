@@ -1,9 +1,9 @@
 {
-  "id": "obsidian-yesterday",
-  "name": "Open Yesterday's Daily Note",
+  "id": "obsidian-blorente",
+  "name": "BL-Obs",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "TODO",
+  "description": "Just random Obsidian things for me.",
   "author": "Borja Lorente",
   "authorUrl": "",
   "fundingUrl": "",
