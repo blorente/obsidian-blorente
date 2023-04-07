@@ -32,9 +32,20 @@ export default class MyPlugin extends Plugin {
       id: 'blorente-create-task',
       name: 'Create Task',
       editorCallback: (editor: Editor, _: MarkdownView) => {
-        const taskStr = "- [ ] "
+        const curLine = editor.getLine(editor.getCursor().line).trimStart()
+        if (curLine.contains("- [ ]")) {
+          return
+        }
+        let taskStr = "- [ ] "
+        if (curLine.startsWith("-")) {
+          taskStr = " [ ] "
+        } else if (curLine.startsWith("- ")) {
+          taskStr = "[ ] "
+        }
         editor.replaceRange(taskStr, editor.getCursor());
-        editor.setCursor(editor.getCursor(), editor.getCursor().ch + taskStr.length)
+        const newPos = editor.getCursor()
+        newPos.ch += taskStr.length
+        editor.setCursor(newPos)
       },
     });
 
